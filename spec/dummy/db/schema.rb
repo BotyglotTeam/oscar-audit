@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_10_164759) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_10_182922) do
   create_table "oscar_activities_activities", force: :cascade do |t|
     t.integer "activity_definition_id", null: false
     t.string "actor_type", null: false
@@ -40,5 +40,5 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_10_164759) do
     t.index ["model_type", "model_event_name"], name: "idx_oa_acts_def_on_model_event", unique: true
   end
 
-  add_foreign_key "oscar_activities_activities", "oscar_activities_definitions", column: "activity_definition_id"
+  add_foreign_key "oscar_activities_activities", "oscar_activities_activity_definitions", column: "activity_definition_id"
 end
