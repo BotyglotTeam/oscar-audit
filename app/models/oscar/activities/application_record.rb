@@ -1,5 +1,5 @@
 module Oscar
-  module Activity
+  module Activities
     class ApplicationRecord < ActiveRecord::Base
       self.abstract_class = true
     end

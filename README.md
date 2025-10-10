@@ -1,4 +1,4 @@
-# Oscar::Activity
+# Oscar::Activities
 Short description and motivation.
 
 ## Usage

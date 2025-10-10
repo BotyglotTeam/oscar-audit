@@ -1,5 +1,5 @@
 module Oscar
-  module Activity
+  module Activities
     module ApplicationHelper
     end
   end
