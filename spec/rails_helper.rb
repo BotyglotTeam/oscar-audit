@@ -10,6 +10,15 @@ abort("The Rails environment is running in production mode!") if Rails.env.produ
 require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
 
+# Shoulda Matchers configuration
+require 'shoulda/matchers'
+Shoulda::Matchers.configure do |config|
+  config.integrate do |with|
+    with.test_framework :rspec
+    with.library :rails
+  end
+end
+
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
 # run as spec files by default. This means that files in spec/support that end
@@ -29,6 +38,15 @@ Dir[File.expand_path("support/**/*.rb", __dir__)].sort.each { |f| require f }
 # If there are pending migrations it will invoke `db:test:prepare` to
 # recreate the test database by loading the schema.
 # If you are not using ActiveRecord, you can remove these lines.
+
+# In engine tests, ensure we only consider the dummy app's migrations to avoid
+# PendingMigrationError from the engine's own db/migrate.
+begin
+  ActiveRecord::Migrator.migrations_paths = [Rails.root.join('db/migrate').to_s]
+rescue StandardError
+  # Fallback for newer AR versions where Migrator is internal; rely on default
+end
+
 begin
   ActiveRecord::Migration.maintain_test_schema!
 rescue ActiveRecord::PendingMigrationError => e
