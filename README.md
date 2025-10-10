@@ -21,6 +21,28 @@ Or install it yourself as:
 $ gem install oscar-activity
 ```
 
+## Migrations
+
+This engine ships with database migrations. To install them into your host app and run them, use one of the following options:
+
+1) Copy/install the migrations into your app:
+
+  ```bash
+  bin/rails oscar_activities:install:migrations
+  ```
+
+2) Run the migrations:
+
+- Run all pending migrations (including this engine's):
+  ```bash
+  bin/rails db:migrate
+  ```
+
+- Run only this engine's migrations using scope:
+  ```bash
+  bin/rails db:migrate SCOPE=oscar_activities
+  ```
+
 ## Testing
 
 ### Regenerating the dummy app
