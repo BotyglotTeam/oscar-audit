@@ -8,7 +8,7 @@ How to use my plugin.
 Add this line to your application's Gemfile:
 
 ```ruby
-gem "oscar-activity"
+gem "oscar-activity", git: "https://github.com/BotyglotTeam/oscar-activities", branch: "main"
 ```
 
 And then execute:
@@ -29,13 +29,6 @@ $ gem install oscar-activity
 rm -rf spec/dummy
 cd ../ 
 rails new oscar-activity/spec/dummy --skip-active-storage --skip-action-mailer --skip-action-cable --skip-javascript --skip-sprockets --skip-test --database=sqlite3 --skip-kamal --skip-git
-```
-
-Now wire the dummy app to your engine:
-
-In `spec/dummy/Gemfile`, add:
-```ruby
-gem "oscar-activity", path: "../.."
 ```
 
 ## Contributing

@@ -1,5 +1,5 @@
 module Oscar
-  module Activity
+  module Activities
     VERSION = "0.1.0"
   end
 end

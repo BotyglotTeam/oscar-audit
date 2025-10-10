@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    oscar-activity (0.1.0)
+    oscar-activities (0.1.0)
       rails (>= 8.0.3)
 
 GEM
@@ -291,7 +291,7 @@ PLATFORMS
 
 DEPENDENCIES
   factory_bot_rails
-  oscar-activity!
+  oscar-activities!
   puma
   rspec-rails
   rubocop-rails-omakase

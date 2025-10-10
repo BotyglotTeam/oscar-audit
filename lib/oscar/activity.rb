@@ -1,8 +1,8 @@
-require "oscar/activity/version"
-require "oscar/activity/engine"
+require "oscar/activities/version"
+require "oscar/activities/engine"
 
 module Oscar
-  module Activity
+  module Activities
     # Your code goes here...
   end
 end

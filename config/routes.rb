@@ -1,2 +1,2 @@
-Oscar::Activity::Engine.routes.draw do
+Oscar::Activities::Engine.routes.draw do
 end
