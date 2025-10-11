@@ -24,11 +24,13 @@ module Oscar
               class_name: "Oscar::Audit::Log",
               inverse_of: :application_log
 
-      # name    # => String, name of the event (such as 'render' from above)
-      # start   # => Time, when the instrumented block started execution
-      # finish  # => Time, when the instrumented block ended execution
-      # id      # => String, unique ID for the instrumenter that fired the event
-      # payload # => Hash, the payload
+      # Handle notification from ActiveSupport::Notifications for this application log.
+      #
+      # @param name [String] name of the event (e.g., 'render', 'sql.active_record')
+      # @param started [Time] when the instrumented block started execution
+      # @param finished [Time] when the instrumented block ended execution
+      # @param unique_id [String] unique ID for the instrumenter that fired the event
+      # @param payload [Hash] arbitrary event payload
       def handle(name, started, finished, unique_id, payload)
         raise NotImplementedError.new("You must implement handle in your application audit log")
       end
