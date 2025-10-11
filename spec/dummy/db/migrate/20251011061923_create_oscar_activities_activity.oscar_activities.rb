@@ -2,12 +2,6 @@
 class CreateOscarActivitiesActivity < ActiveRecord::Migration[8.0]
   def change
     create_table :oscar_activities_activities, **table_id_opt do |t|
-      # FK to definitions table (Oscar::Activities::ActivityDefinition)
-      t.references :activity_definition,
-                   **reference_opt,
-                   null: false,
-                   foreign_key: { to_table: :oscar_activities_activity_definitions },
-                   index: { name: "idx_oa_acts_on_definition_id" }
 
       # Who performed the action
       t.references :actor,
