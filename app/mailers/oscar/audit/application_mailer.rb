@@ -1,6 +1,6 @@
 module Oscar
   module Audit
-    class ApplicationMailer < ActionMailer::Base
+    class ApplicationMailer < ::ActionMailer::Base
     end
   end
 end

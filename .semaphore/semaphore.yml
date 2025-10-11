@@ -1,0 +1,27 @@
+version: v1.0
+name: Oscar Audit
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu2004
+blocks:
+  - name: Test
+    task:
+      env_vars:
+        - name: RAILS_ENV
+          value: test
+        - name: RUBY_VERSION
+          value: 3.3.8
+      jobs:
+        - name: Test
+          commands:
+            - checkout
+            - sem-version ruby $RUBY_VERSION
+            - cache restore
+            - cd spec/dummy
+            - bundle install --path vendor/bundle
+            - bundle exec rake db:setup
+            - cd ../..
+            - bundle install --path vendor/bundle
+            - cache store
+            - bundle exec rspec spec
