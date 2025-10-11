@@ -1,3 +1,3 @@
-Oscar::Activities::Engine.routes.draw do
+Oscar::Audit::Engine.routes.draw do
 
 end

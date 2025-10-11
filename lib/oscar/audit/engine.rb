@@ -1,7 +1,7 @@
 module Oscar
-  module Activities
+  module Audit
     class Engine < ::Rails::Engine
-      isolate_namespace Oscar::Activities
+      isolate_namespace Oscar::Audit
     end
   end
 end

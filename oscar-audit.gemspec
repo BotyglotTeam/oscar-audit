@@ -1,13 +1,13 @@
-require_relative "lib/oscar/activities/version"
+require_relative "lib/oscar/audit/version"
 
 Gem::Specification.new do |spec|
-  spec.name        = "oscar-activities"
-  spec.version     = Oscar::Activities::VERSION
+  spec.name        = "oscar-audit"
+  spec.version     = Oscar::Audit::VERSION
   spec.authors     = [ "Dorian" ]
   spec.email       = [ "dorian@botyglot.com" ]
-  spec.homepage    = "https://github.com/BotyglotTeam/oscar-activities"
-  spec.summary     = "Easy activity tracking for models"
-  spec.description = "Provides activity tracking for your ActiveRecord, models in Rails 8.0+."
+  spec.homepage    = "https://github.com/BotyglotTeam/oscar-audit"
+  spec.summary     = "Easy audit/activity tracking for models"
+  spec.description = "Provides auditing/activity tracking for your ActiveRecord models in Rails 8.0+."
   spec.license     = "MIT"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the "allowed_push_host"
@@ -15,7 +15,7 @@ Gem::Specification.new do |spec|
   #spec.metadata["allowed_push_host"] = "TODO: Set to 'http://mygemserver.com'"
 
   spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = "https://github.com/BotyglotTeam/oscar-activities"
+  spec.metadata["source_code_uri"] = "https://github.com/BotyglotTeam/oscar-audit"
   #spec.metadata["changelog_uri"] = "TODO: Put your gem's CHANGELOG.md URL here."
 
   spec.files = Dir.chdir(File.expand_path(__dir__)) do

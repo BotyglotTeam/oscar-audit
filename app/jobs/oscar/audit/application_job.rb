@@ -1,5 +1,5 @@
 module Oscar
-  module Activities
+  module Audit
     class ApplicationJob < ActiveJob::Base
     end
   end

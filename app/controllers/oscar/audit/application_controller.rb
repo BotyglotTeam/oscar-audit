@@ -1,5 +1,5 @@
 module Oscar
-  module Activities
+  module Audit
     class ApplicationController < ActionController::Base
     end
   end

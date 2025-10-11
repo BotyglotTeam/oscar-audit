@@ -1,6 +1,6 @@
-# app/models/oscar/activities/activity.rb
+# app/models/oscar/audit/activity.rb
 module Oscar
-  module Activities
+  module Audit
     class Activity < ApplicationRecord
 
       belongs_to :actor, polymorphic: true
