@@ -13,13 +13,13 @@ module Oscar
     EVENT_SUBSCRIBERS = Hash.new { |h, k| h[k] = {} }
 
     class << self
+      # Global flag that applies across all threads. Thread-local overrides take precedence.
+      @global_application_logs_enabled = true
+
       def application_logs_enabled?
         thread_value = Thread.current[APPLICATION_LOGS_TOGGLE_KEY]
-        if thread_value.nil?
-          true # true by default
-        else
-          !!thread_value
-        end
+        return !!thread_value unless thread_value.nil?
+        !!@global_application_logs_enabled
       end
 
       def with_application_logs
@@ -38,13 +38,13 @@ module Oscar
         Thread.current[APPLICATION_LOGS_TOGGLE_KEY] = previous_state
       end
 
-      # Optional imperative API
+      # Optional imperative API (global across all threads)
       def enable_application_logs!
-        Thread.current[APPLICATION_LOGS_TOGGLE_KEY] = true
+        @global_application_logs_enabled = true
       end
 
       def disable_application_logs!
-        Thread.current[APPLICATION_LOGS_TOGGLE_KEY] = false
+        @global_application_logs_enabled = false
       end
 
       # Global subscription registry helpers (used to avoid duplicate subscriptions in test/reload scenarios)

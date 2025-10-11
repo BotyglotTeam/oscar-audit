@@ -72,4 +72,36 @@ RSpec.describe 'Oscar::Audit application logs toggle' do
 
     expect(calls).to eq(1)
   end
+
+  it 'disable_application_logs! is global across threads' do
+    begin
+      Oscar::Audit.disable_application_logs!
+      expect_any_instance_of(ToggleHandledEvent).not_to receive(:handle)
+
+      t = Thread.new do
+        ActiveSupport::Notifications.instrument('toggle.event', foo: 'bar') do
+        end
+      end
+      t.join
+    ensure
+      Oscar::Audit.enable_application_logs!
+    end
+  end
+
+  it 'enable_application_logs! is global across threads' do
+    begin
+      Oscar::Audit.disable_application_logs! # start from OFF globally
+      expect_any_instance_of(ToggleHandledEvent).to receive(:handle).once
+
+      Oscar::Audit.enable_application_logs!
+
+      t = Thread.new do
+        ActiveSupport::Notifications.instrument('toggle.event', foo: 'bar') do
+        end
+      end
+      t.join
+    ensure
+      Oscar::Audit.enable_application_logs!
+    end
+  end
 end

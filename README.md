@@ -2,7 +2,48 @@
 Short description and motivation.
 
 ## Usage
-How to use my plugin.
+
+Application logs are enabled by default. You can temporarily enable/disable them in a thread-local, block-scoped way, or imperatively for all threads.
+
+- Default behavior: application logs are enabled by default.
+- Scope: block helpers are thread-local. They restore the previous state after the block finishes (even if it raises).
+- Imperative methods are global: they change the setting for all threads until changed again.
+
+Block helpers:
+
+```ruby
+# Force-enable within the block (restores previous state after)
+Oscar::Audit.with_application_logs do
+  # application logs are ON here
+end
+
+# Force-disable within the block (restores previous state after)
+Oscar::Audit.without_application_logs do
+  # application logs are OFF here
+end
+```
+
+Imperative API (current thread only):
+
+```ruby
+Oscar::Audit.disable_application_logs!
+# application logs are OFF for the current thread until changed again
+
+Oscar::Audit.enable_application_logs!
+# application logs are ON for the current thread until changed again
+```
+
+Nesting examples:
+
+```ruby
+Oscar::Audit.without_application_logs do
+  # OFF here
+  Oscar::Audit.with_application_logs do
+    # ON here (temporarily overrides the outer scope)
+  end
+  # back to OFF here
+end
+```
 
 ## Installation
 Add this line to your application's Gemfile:
