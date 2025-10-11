@@ -43,8 +43,10 @@ RSpec.describe 'Oscar::Audit::Auditable DSL' do
       expect(payload).to include(foo: 'bar')
     end
 
-    ActiveSupport::Notifications.instrument('test.event', foo: 'bar') do
-      # simulate work
+    Oscar::Audit.with_application_logs do
+      ActiveSupport::Notifications.instrument('test.event', foo: 'bar') do
+        # simulate work
+      end
     end
   end
 end

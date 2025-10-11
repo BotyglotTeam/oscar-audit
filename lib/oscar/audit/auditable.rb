@@ -11,11 +11,6 @@ module Oscar
     module Auditable
       extend ActiveSupport::Concern
 
-      included do
-        # keep a per-class registry of subscribers to prevent duplicate subscriptions
-        class_attribute :_audit_log_subscribers, instance_accessor: false, default: {}
-      end
-
       class_methods do
         # Declares an audit log handler for a given ActiveSupport::Notifications event.
         #
@@ -28,12 +23,20 @@ module Oscar
         def audit_log(event_name, handler = nil, &block)
           event = event_name.to_s
 
-          # Avoid double-subscriptions in reloader/development by tracking by event
-          return if _audit_log_subscribers.key?(event)
+          # Compute a key that uniquely identifies this handler for this event,
+          # so we can avoid duplicate subscriptions for the same handler while
+          # still allowing multiple handlers per event.
+          handler_key = handler_key_for(handler, block)
+
+          # Skip only if this exact handler is already subscribed for this event
+          return if Oscar::Audit.subscribed_to_event?(event, handler_key)
 
           resolver = build_handler_resolver(handler, block)
 
           subscriber = ActiveSupport::Notifications.subscribe(event) do |name, start, finish, id, payload|
+            # Respect global/thread-local application log toggle
+            next unless Oscar::Audit.application_logs_enabled?
+
             instance = resolver.call(name, start, finish, id, payload)
             unless instance.respond_to?(:handle)
               raise NoMethodError, "Resolved audit log handler for '#{event}' does not implement #handle"
@@ -41,8 +44,8 @@ module Oscar
             instance.handle(name, start, finish, id, payload)
           end
 
-          # store reference for potential future unsubscription, keyed by event
-          self._audit_log_subscribers = _audit_log_subscribers.merge(event => subscriber)
+          # store reference globally for potential future unsubscription, keyed by event and handler
+          Oscar::Audit.register_subscriber(event, handler_key, subscriber)
         end
 
         private
@@ -73,6 +76,18 @@ module Oscar
             raise ArgumentError, "You must provide a handler class or a block to audit_log"
           else
             raise ArgumentError, "Unsupported handler: #{handler.inspect}"
+          end
+        end
+
+        def handler_key_for(handler, block)
+          if block
+            "block:#{block.object_id}"
+          elsif handler.is_a?(Class)
+            "class:#{handler.name}"
+          elsif handler.is_a?(String) || handler.is_a?(Symbol)
+            "const:#{handler.to_s}"
+          else
+            'unknown'
           end
         end
       end
