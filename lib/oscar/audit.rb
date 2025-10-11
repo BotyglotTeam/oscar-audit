@@ -4,64 +4,56 @@ require "oscar/audit/railtie"
 
 module Oscar
   module Audit
-    # Application logs are enabled by default in all environments.
+    # Application logs are enabled by default in all environments (except test).
     # This toggle is thread-local and can be overridden within a block using
     # with_application_logs / without_application_logs.
 
-    KEY = :__oscar_audit_application_logs_enabled
-    # SUBSCRIBERS is a Hash of event => { handler_key => subscriber }
-    SUBSCRIBERS = Hash.new { |h, k| h[k] = {} }
+    APPLICATION_LOGS_TOGGLE_KEY = :__oscar_audit_application_logs_enabled
+    # EVENT_SUBSCRIBERS is a Hash of event_name => { handler_dedup_key => subscriber }
+    EVENT_SUBSCRIBERS = Hash.new { |h, k| h[k] = {} }
 
     class << self
       def application_logs_enabled?
-        val = Thread.current[KEY]
-        if val.nil?
-          if defined?(Rails) && Rails.respond_to?(:env) && Rails.env.test?
-            false
-          else
-            true
-          end
+        thread_value = Thread.current[APPLICATION_LOGS_TOGGLE_KEY]
+        if thread_value.nil?
+          true # true by default
         else
-          !!val
+          !!thread_value
         end
       end
 
       def with_application_logs
-        prev = application_logs_enabled?
-        Thread.current[KEY] = true
+        previous_state = application_logs_enabled?
+        Thread.current[APPLICATION_LOGS_TOGGLE_KEY] = true
         yield
       ensure
-        Thread.current[KEY] = prev
+        Thread.current[APPLICATION_LOGS_TOGGLE_KEY] = previous_state
       end
 
       def without_application_logs
-        prev = application_logs_enabled?
-        Thread.current[KEY] = false
+        previous_state = application_logs_enabled?
+        Thread.current[APPLICATION_LOGS_TOGGLE_KEY] = false
         yield
       ensure
-        Thread.current[KEY] = prev
+        Thread.current[APPLICATION_LOGS_TOGGLE_KEY] = previous_state
       end
 
       # Optional imperative API
       def enable_application_logs!
-        Thread.current[KEY] = true
+        Thread.current[APPLICATION_LOGS_TOGGLE_KEY] = true
       end
 
       def disable_application_logs!
-        Thread.current[KEY] = false
+        Thread.current[APPLICATION_LOGS_TOGGLE_KEY] = false
       end
 
       # Global subscription registry helpers (used to avoid duplicate subscriptions in test/reload scenarios)
-      def subscribed_to_event?(event, key = nil)
-        if key
-          SUBSCRIBERS.dig(event, key) ? true : false
-        else
-          SUBSCRIBERS.key?(event) && SUBSCRIBERS[event].any?
-        end
+      def handler_subscribed_for_event?(event_name, handler)
+        EVENT_SUBSCRIBERS.dig(event_name, handler) ? true : false
       end
 
-      def register_subscriber(event, key, subscriber)
-        SUBSCRIBERS[event][key] = subscriber
+      def register_event_handler_subscriber(event_name, handler, subscriber)
+        EVENT_SUBSCRIBERS[event_name][handler] = subscriber
       end
     end
   end

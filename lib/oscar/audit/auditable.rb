@@ -20,75 +20,49 @@ module Oscar
         #           the handler instance to be used for processing the event.
         #
         # The handler's #handle(name, start, finish, id, payload) instance method will be invoked.
-        def audit_log(event_name, handler = nil, &block)
-          event = event_name.to_s
-
-          # Compute a key that uniquely identifies this handler for this event,
-          # so we can avoid duplicate subscriptions for the same handler while
-          # still allowing multiple handlers per event.
-          handler_key = handler_key_for(handler, block)
+        #
+        # Requirements simplified:
+        # - handler is mandatory and must be a String name of an Oscar::Audit::ApplicationLog subclass.
+        # - event_name can be a String or a Regexp (as supported by ActiveSupport::Notifications.subscribe).
+        def audit_log(event_name, handler)
+          event_registry_key = event_name.is_a?(Regexp) ? event_name.inspect : event_name.to_s
 
           # Skip only if this exact handler is already subscribed for this event
-          return if Oscar::Audit.subscribed_to_event?(event, handler_key)
+          return if Oscar::Audit.handler_subscribed_for_event?(event_registry_key, handler)
 
-          resolver = build_handler_resolver(handler, block)
+          handler_instance_resolver = build_handler_resolver(handler)
 
-          subscriber = ActiveSupport::Notifications.subscribe(event) do |name, start, finish, id, payload|
+          notification_subscriber = ActiveSupport::Notifications.subscribe(event_name) do |ev_name, started_at, finished_at, event_id, payload|
             # Respect global/thread-local application log toggle
             next unless Oscar::Audit.application_logs_enabled?
 
-            instance = resolver.call(name, start, finish, id, payload)
-            unless instance.respond_to?(:handle)
-              raise NoMethodError, "Resolved audit log handler for '#{event}' does not implement #handle"
+            handler_instance = handler_instance_resolver.call(ev_name, started_at, finished_at, event_id, payload)
+
+            unless handler_instance.respond_to?(:handle)
+              raise NoMethodError, "Resolved audit log handler for '#{event_registry_key}' does not implement #handle"
             end
-            instance.handle(name, start, finish, id, payload)
+
+            handler_instance.handle(ev_name, started_at, finished_at, event_id, payload)
           end
 
           # store reference globally for potential future unsubscription, keyed by event and handler
-          Oscar::Audit.register_subscriber(event, handler_key, subscriber)
+          Oscar::Audit.register_event_handler_subscriber(event_registry_key, handler, notification_subscriber)
         end
 
         private
 
-        def build_handler_resolver(handler, block)
-          if block
-            # Caller decides how to create/resolve the handler instance per-notification
-            return block
+        def build_handler_resolver(handler)
+          unless handler.is_a?(String)
+            raise ArgumentError, "handler must be the full String name of an Oscar::Audit::ApplicationLog subclass"
           end
 
-          case handler
-          when Class
-            klass = handler
+          return lambda { |_event_name, _started_at, _finished_at, _event_id, _payload|
+            klass = handler.constantize
             unless klass <= Oscar::Audit::ApplicationLog
               raise ArgumentError, "#{klass} must inherit from Oscar::Audit::ApplicationLog"
             end
-            return ->(_name, _start, _finish, _id, _payload) { klass.new }
-          when String, Symbol
-            const_name = handler.to_s
-            return lambda { |_name, _start, _finish, _id, _payload|
-              klass = const_name.constantize
-              unless klass <= Oscar::Audit::ApplicationLog
-                raise ArgumentError, "#{klass} must inherit from Oscar::Audit::ApplicationLog"
-              end
-              klass.new
-            }
-          when nil
-            raise ArgumentError, "You must provide a handler class or a block to audit_log"
-          else
-            raise ArgumentError, "Unsupported handler: #{handler.inspect}"
-          end
-        end
-
-        def handler_key_for(handler, block)
-          if block
-            "block:#{block.object_id}"
-          elsif handler.is_a?(Class)
-            "class:#{handler.name}"
-          elsif handler.is_a?(String) || handler.is_a?(Symbol)
-            "const:#{handler.to_s}"
-          else
-            'unknown'
-          end
+            klass.new
+          }
         end
       end
     end

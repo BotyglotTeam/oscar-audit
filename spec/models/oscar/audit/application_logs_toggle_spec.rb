@@ -31,8 +31,8 @@ RSpec.describe 'Oscar::Audit application logs toggle' do
     ToggleTestTarget.create!(name: 'X')
   end
 
-  it 'is disabled by default in test environment' do
-    expect_any_instance_of(ToggleHandledEvent).not_to receive(:handle)
+  it 'is enbled by default in test environment' do
+    expect_any_instance_of(ToggleHandledEvent).to receive(:handle).once
 
     ActiveSupport::Notifications.instrument('toggle.event', foo: 'bar') do
       # do nothing
