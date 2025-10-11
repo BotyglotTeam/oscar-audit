@@ -18,7 +18,10 @@ blocks:
             - checkout
             - sem-version ruby $RUBY_VERSION
             - cache restore
+            - cd spec/dummy
+            - bundle install --deployment --path vendor/bundle
+            - bundle exec rake db:setup
+            - cd ../..
             - bundle install --deployment --path vendor/bundle
             - cache store
-            - 'bundle exec rake db:setup'
-            - bundle exec rspec
+            - bundle exec rspec spec
