@@ -18,6 +18,7 @@ module Oscar
       attr_accessor :actor
       attr_accessor :impersonated_by
       attr_accessor :target
+      attr_accessor :target_event
 
       class << self
         # Declare that this ApplicationLog subclass tracks a specific ActiveSupport::Notifications event.
@@ -62,6 +63,7 @@ module Oscar
       def create_associated_log
         create_log!(
           target: target,
+          target_event: target_event,
           actor: actor,
           impersonated_by: impersonated_by,
           created_at: created_at,
