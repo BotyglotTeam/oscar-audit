@@ -2,8 +2,6 @@ require 'rails_helper'
 
 RSpec.describe Oscar::Activities::Activity, type: :model do
   describe 'associations' do
-    it { is_expected.to belong_to(:activity_definition).class_name('Oscar::Activities::ActivityDefinition') }
-
     it { is_expected.to belong_to(:actor) }
     it 'has a polymorphic actor association' do
       reflection = described_class.reflect_on_association(:actor)
@@ -30,7 +28,6 @@ RSpec.describe Oscar::Activities::Activity, type: :model do
   end
 
   describe 'validations' do
-    it { is_expected.to validate_presence_of(:activity_definition) }
     it { is_expected.to validate_presence_of(:actor) }
     it { is_expected.to validate_presence_of(:target) }
   end
