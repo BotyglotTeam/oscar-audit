@@ -10,8 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_11_061923) do
-  create_table "oscar_activities_activities", force: :cascade do |t|
+ActiveRecord::Schema[8.0].define(version: 2025_10_11_065846) do
+  create_table "oscar_audit_activities", force: :cascade do |t|
     t.string "actor_type", null: false
     t.integer "actor_id", null: false
     t.string "impersonated_by_type"
@@ -22,10 +22,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_11_061923) do
     t.integer "log_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["actor_type", "actor_id"], name: "idx_oa_acts_on_actor"
-    t.index ["created_at"], name: "idx_oa_acts_on_created_at"
-    t.index ["impersonated_by_type", "impersonated_by_id"], name: "idx_oa_acts_on_impersonated_by"
-    t.index ["log_type", "log_id"], name: "idx_oa_acts_on_log"
-    t.index ["target_type", "target_id"], name: "idx_oa_acts_on_target"
+    t.index ["actor_type", "actor_id"], name: "idx_oaudit_acts_on_actor"
+    t.index ["created_at"], name: "idx_oaudit_acts_on_created_at"
+    t.index ["impersonated_by_type", "impersonated_by_id"], name: "idx_oaudit_acts_on_impersonated_by"
+    t.index ["log_type", "log_id"], name: "idx_oaudit_acts_on_log"
+    t.index ["target_type", "target_id"], name: "idx_oaudit_acts_on_target"
   end
 end

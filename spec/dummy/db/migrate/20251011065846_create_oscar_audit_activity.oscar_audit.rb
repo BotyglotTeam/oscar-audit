@@ -1,38 +1,38 @@
-# This migration comes from oscar_activities (originally 20251010163524)
-class CreateOscarActivitiesActivity < ActiveRecord::Migration[8.0]
+# This migration comes from oscar_audit (originally 20251011084600)
+class CreateOscarAuditActivity < ActiveRecord::Migration[8.0]
   def change
-    create_table :oscar_activities_activities, **table_id_opt do |t|
+    create_table :oscar_audit_activities, **table_id_opt do |t|
 
       # Who performed the action
       t.references :actor,
                    **reference_opt,
                    polymorphic: true,
                    null: false,
-                   index: { name: "idx_oa_acts_on_actor" }
+                   index: { name: "idx_oaudit_acts_on_actor" }
 
       # Optional impersonator
       t.references :impersonated_by,
                    **reference_opt,
                    polymorphic: true,
-                   index: { name: "idx_oa_acts_on_impersonated_by" }
+                   index: { name: "idx_oaudit_acts_on_impersonated_by" }
 
       # The affected record
       t.references :target,
                    **reference_opt,
                    polymorphic: true,
                    null: false,
-                   index: { name: "idx_oa_acts_on_target" }
+                   index: { name: "idx_oaudit_acts_on_target" }
 
       # Project-specific log entry (instance of the definition's log_type)
       t.references :log,
                    **reference_opt,
                    polymorphic: true,
-                   index: { name: "idx_oa_acts_on_log" }
+                   index: { name: "idx_oaudit_acts_on_log" }
 
       t.timestamps
     end
 
-    add_index :oscar_activities_activities, :created_at, name: "idx_oa_acts_on_created_at"
+    add_index :oscar_audit_activities, :created_at, name: "idx_oaudit_acts_on_created_at"
   end
 
   private

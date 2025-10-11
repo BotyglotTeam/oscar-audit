@@ -43,4 +43,4 @@ group :development do
   gem "web-console"
 end
 
-gem "oscar-activities", path: "../.."
+gem "oscar-audit", path: "../.."
