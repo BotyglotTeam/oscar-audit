@@ -13,6 +13,7 @@ gem "rubocop-rails-omakase", require: false
 # Testing helpers
 group :test do
   gem "shoulda-matchers"
+  gem "with_model"
 end
 
 # Speed up boot for dummy app

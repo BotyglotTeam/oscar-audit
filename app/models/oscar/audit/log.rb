@@ -6,7 +6,7 @@ module Oscar
       belongs_to :actor, polymorphic: true
       belongs_to :impersonated_by, polymorphic: true, optional: true
       belongs_to :target, polymorphic: true
-      belongs_to :application_log, polymorphic: true, optional: true
+      belongs_to :application_log, polymorphic: true
 
       validates :actor, :target, :application_log, presence: true
     end

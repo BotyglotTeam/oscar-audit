@@ -20,9 +20,9 @@ RSpec.describe Oscar::Audit::Log, type: :model do
       expect(reflection.polymorphic?).to be(true)
     end
 
-    it { is_expected.to belong_to(:log).optional }
-    it 'has a polymorphic log association' do
-      reflection = described_class.reflect_on_association(:log)
+    it { is_expected.to belong_to(:application_log) }
+    it 'has a polymorphic application_log association' do
+      reflection = described_class.reflect_on_association(:application_log)
       expect(reflection.polymorphic?).to be(true)
     end
   end
@@ -30,5 +30,6 @@ RSpec.describe Oscar::Audit::Log, type: :model do
   describe 'validations' do
     it { is_expected.to validate_presence_of(:actor) }
     it { is_expected.to validate_presence_of(:target) }
+    it { is_expected.to validate_presence_of(:application_log) }
   end
 end

@@ -20,14 +20,9 @@ module Oscar
       self.abstract_class = true
 
       has_one :log,
-              :as => :log,
-              :class_name => "Oscar::Audit::Log",
-              :inverse_of => :application_log,
-              :foreign_key => :command_id
-
-      validates_presence_of :triggered_by
-      after_create_commit :create_associated_log
-
+              as: :application_log,
+              class_name: "Oscar::Audit::Log",
+              inverse_of: :application_log
 
       # name    # => String, name of the event (such as 'render' from above)
       # start   # => Time, when the instrumented block started execution
@@ -39,7 +34,7 @@ module Oscar
       end
 
       def create_associated_log
-        self.create_log!
+        create_log!
       end
 
     end
