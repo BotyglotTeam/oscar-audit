@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Oscar::Activities::Activity, type: :model do
+RSpec.describe Oscar::Audit::Log, type: :model do
   describe 'associations' do
     it { is_expected.to belong_to(:actor) }
     it 'has a polymorphic actor association' do
