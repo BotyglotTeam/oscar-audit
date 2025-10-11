@@ -23,6 +23,8 @@ class CreateOscarAuditLogs< ActiveRecord::Migration[8.0]
                    null: false,
                    index: { name: "idx_oaudit_acts_on_target" }
 
+      t.string :target_event, null: false
+
       # Project-specific log entry (instance of the definition's log_type)
       t.references :application_log,
                    **reference_opt,
