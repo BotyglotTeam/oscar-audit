@@ -1,7 +1,7 @@
 # This migration comes from oscar_audit (originally 20251011084600)
-class CreateOscarAuditActivity < ActiveRecord::Migration[8.0]
+class CreateOscarAuditLogs< ActiveRecord::Migration[8.0]
   def change
-    create_table :oscar_audit_activities, **table_id_opt do |t|
+    create_table :oscar_audit_logs, **table_id_opt do |t|
 
       # Who performed the action
       t.references :actor,
@@ -24,15 +24,16 @@ class CreateOscarAuditActivity < ActiveRecord::Migration[8.0]
                    index: { name: "idx_oaudit_acts_on_target" }
 
       # Project-specific log entry (instance of the definition's log_type)
-      t.references :log,
+      t.references :application_log,
                    **reference_opt,
                    polymorphic: true,
+                   null: false,
                    index: { name: "idx_oaudit_acts_on_log" }
 
       t.timestamps
     end
 
-    add_index :oscar_audit_activities, :created_at, name: "idx_oaudit_acts_on_created_at"
+    add_index :oscar_audit_logs, :created_at, name: "idx_oscars_audit_logs_on_created_at"
   end
 
   private
