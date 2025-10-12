@@ -32,8 +32,9 @@ RSpec.describe Oscar::Audit::ApplicationLog, type: :model do
       def handle(event_name, started_at, finished_at, event_id, payload)
         self.actor = payload[:actor]
         self.target = payload[:target]
-        self.impersonated_by = payload[:impersonated_by]
         self.target_event = event_name.split(".").last
+        self.target_event_id = event_id
+        self.impersonated_by = payload[:impersonated_by]
         self
       end
     end
@@ -51,7 +52,7 @@ RSpec.describe Oscar::Audit::ApplicationLog, type: :model do
   describe "after_create_commit" do
     it "creates a Log linked to actor, target and application_log" do
       expect {
-        HandledEvent.create!(actor: actor, target: target, target_event: "done")
+        HandledEvent.create!(actor: actor, target: target, target_event: "done", target_event_id: '1234567890')
       }.to change { Oscar::Audit::Log.count }.by(1)
 
       app_log = HandledEvent.last
@@ -60,6 +61,7 @@ RSpec.describe Oscar::Audit::ApplicationLog, type: :model do
       expect(log.actor).to eq(actor)
       expect(log.target).to eq(target)
       expect(log.target_event).to eq('done')
+      expect(log.target_event_id).to eq('1234567890')
       expect(log.application_log).to eq(app_log)
     end
   end

@@ -19,6 +19,7 @@ module Oscar
       attr_accessor :impersonated_by
       attr_accessor :target
       attr_accessor :target_event
+      attr_accessor :target_event_id
 
       class << self
         # Declare that this ApplicationLog subclass tracks a specific ActiveSupport::Notifications event.
@@ -42,6 +43,7 @@ module Oscar
         end
 
         def handle(event_name, started_at, finished_at, event_id, payload)
+          return if Oscar::Audit::Log.exists?(target_event_id: event_id)
           instance = new
           instance.handle(event_name, started_at, finished_at, event_id, payload)
           instance.save!
@@ -64,6 +66,7 @@ module Oscar
         create_log!(
           target: target,
           target_event: target_event,
+          target_event_id: target_event_id,
           actor: actor,
           impersonated_by: impersonated_by,
           created_at: created_at,
