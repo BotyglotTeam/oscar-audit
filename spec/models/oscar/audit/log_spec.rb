@@ -20,6 +20,7 @@ RSpec.describe Oscar::Audit::Log, type: :model do
     it { is_expected.to validate_presence_of(:actor) }
     it { is_expected.to validate_presence_of(:target) }
     it { is_expected.to validate_presence_of(:target_event) }
+    it { is_expected.to validate_presence_of(:target_event_id) }
     it { is_expected.to validate_presence_of(:application_log) }
   end
 end

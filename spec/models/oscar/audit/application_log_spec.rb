@@ -103,16 +103,28 @@ RSpec.describe Oscar::Audit::ApplicationLog, type: :model do
 
   describe ".handle" do
     it "instantiates, calls instance#handle, saves the record and creates the associated log" do
+      event_id = SecureRandom.uuid
       expect {
-        HandledEvent.handle("evt", Time.current, Time.current, SecureRandom.uuid, { actor: actor, target: target })
+        HandledEvent.handle("evt", Time.current, Time.current, event_id, { actor: actor, target: target })
       }.to change { HandledEvent.count }.by(1)
        .and change { Oscar::Audit::Log.count }.by(1)
 
-      # Ensure we have a log for the created record
+      # Ensure we have a log for the created record and it includes target_event_id
       record = HandledEvent.last
       expect(record.log).to be_present
       expect(record.log.actor).to eq(actor)
       expect(record.log.target).to eq(target)
+      expect(record.log.target_event_id).to eq(event_id)
+    end
+
+    it "is idempotent by target_event_id and ignores duplicate events with the same id" do
+      event_id = SecureRandom.uuid
+      HandledEvent.handle("evt", Time.current, Time.current, event_id, { actor: actor, target: target })
+
+      expect {
+        HandledEvent.handle("evt", Time.current, Time.current, event_id, { actor: actor, target: target })
+      }.to change { HandledEvent.count }.by(0)
+       .and change { Oscar::Audit::Log.count }.by(0)
     end
   end
 end
