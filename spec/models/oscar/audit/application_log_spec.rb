@@ -114,13 +114,13 @@ RSpec.describe Oscar::Audit::ApplicationLog, type: :model do
     end
   end
 
-  describe ".exists?" do
-    it "returns false by default on the base class and simple subclasses" do
+  describe ".perform_handle?" do
+    it "returns true by default on the base class and simple subclasses" do
       instrumenter_id = SecureRandom.uuid
-      expect(HandledEvent.exists?("evt", Time.current, Time.current, instrumenter_id, {})).to eq(false)
+      expect(HandledEvent.perform_handle?("evt", Time.current, Time.current, instrumenter_id, {})).to eq(true)
     end
 
-    # Subclass overriding .exists? to prevent duplicates based on instrumenter_id
+    # Subclass overriding .perform_handle? to prevent duplicates based on instrumenter_id
     with_model :DedupHandledEvent, superclass: Oscar::Audit::ApplicationLog do
       table do |t|
         t.string :event_uuid
@@ -128,8 +128,8 @@ RSpec.describe Oscar::Audit::ApplicationLog, type: :model do
       end
 
       model do
-        def self.exists?(event_name, started_at, finished_at, instrumenter_id, payload)
-          where(event_uuid: payload[:event_id]).exists?
+        def self.perform_handle?(event_name, started_at, finished_at, instrumenter_id, payload)
+          !where(event_uuid: payload[:event_id]).exists?
         end
 
         def handle(event_name, started_at, finished_at, instrumenter_id, payload)
@@ -142,7 +142,7 @@ RSpec.describe Oscar::Audit::ApplicationLog, type: :model do
       end
     end
 
-    it "does not create duplicates when a child class overrides .exists?" do
+    it "does not create duplicates when a child class overrides .perform_handle?" do
       instrumenter_id = SecureRandom.uuid
       event_id = SecureRandom.uuid
 

@@ -42,14 +42,17 @@ module Oscar
         end
 
         def handle(event_name, started_at, finished_at, instrumenter_id, payload)
-          return if exists?(event_name, started_at, finished_at, instrumenter_id, payload)
+          return unless perform_handle?(event_name, started_at, finished_at, instrumenter_id, payload)
           instance = new
           instance.handle(event_name, started_at, finished_at, instrumenter_id, payload)
           instance.save!
         end
 
-        def exists?(event_name, started_at, finished_at, instrumenter_id, payload)
-          false
+        # Should this event be handled (i.e., should an ApplicationLog record be created)?
+        # Subclasses can override this to implement de-duplication or filtering logic.
+        # By default we perform handling.
+        def perform_handle?(event_name, started_at, finished_at, instrumenter_id, payload)
+          true
         end
       end
 
