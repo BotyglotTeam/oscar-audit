@@ -7,3 +7,4 @@ class AddTargetEventIdToOscarAuditLogs < ActiveRecord::Migration[8.0]
 
 
 end
+

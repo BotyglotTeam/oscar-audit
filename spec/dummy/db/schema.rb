@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_12_135110) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_12_143353) do
   create_table "oscar_audit_logs", force: :cascade do |t|
     t.string "actor_type", null: false
     t.integer "actor_id", null: false
@@ -23,12 +23,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_12_135110) do
     t.integer "application_log_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "target_event_id"
     t.index ["actor_type", "actor_id"], name: "idx_oaudit_acts_on_actor"
     t.index ["application_log_type", "application_log_id"], name: "idx_oaudit_acts_on_log"
     t.index ["created_at"], name: "idx_oscars_audit_logs_on_created_at"
     t.index ["impersonated_by_type", "impersonated_by_id"], name: "idx_oaudit_acts_on_impersonated_by"
-    t.index ["target_event_id"], name: "index_oscar_audit_logs_on_target_event_id", unique: true
     t.index ["target_type", "target_id"], name: "idx_oaudit_acts_on_target"
   end
 end
