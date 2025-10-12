@@ -41,17 +41,22 @@ module Oscar
           Oscar::Audit.register_event_handler_subscriber(event_name, name, subscriber)
         end
 
-        def handle(event_name, started_at, finished_at, event_id, payload)
+        def handle(event_name, started_at, finished_at, instrumenter_id, payload)
+          return if exists?(event_name, started_at, finished_at, instrumenter_id, payload)
           instance = new
-          instance.handle(event_name, started_at, finished_at, event_id, payload)
+          instance.handle(event_name, started_at, finished_at, instrumenter_id, payload)
           instance.save!
+        end
+
+        def exists?(event_name, started_at, finished_at, instrumenter_id, payload)
+          false
         end
       end
 
       # @param event_name [String] name of the event (e.g., 'render', 'sql.active_record')
       # @param started_at [Time] when the instrumented block started execution
       # @param finished_at [Time] when the instrumented block ended execution
-      # @param event_id [String] unique ID for the instrumenter that fired the event
+      # @param instrumenter_id [String] unique ID for the instrumenter that fired the event
       # @param payload [Hash] arbitrary event payload
       def handle(event_name, started_at, finished_at, event_id, payload)
         # Implement in subclass

@@ -101,9 +101,9 @@ RSpec.describe Oscar::Audit::ApplicationLog, type: :model do
 
   describe ".handle" do
     it "instantiates, calls instance#handle, saves the record and creates the associated log" do
-      event_id = SecureRandom.uuid
+      instrumenter_id = SecureRandom.uuid
       expect {
-        HandledEvent.handle("evt", Time.current, Time.current, event_id, { actor: actor, target: target })
+        HandledEvent.handle("evt", Time.current, Time.current, instrumenter_id, { actor: actor, target: target })
       }.to change { HandledEvent.count }.by(1)
        .and change { Oscar::Audit::Log.count }.by(1)
 
@@ -111,6 +111,59 @@ RSpec.describe Oscar::Audit::ApplicationLog, type: :model do
       expect(record.log).to be_present
       expect(record.log.actor).to eq(actor)
       expect(record.log.target).to eq(target)
+    end
+  end
+
+  describe ".exists?" do
+    it "returns false by default on the base class and simple subclasses" do
+      instrumenter_id = SecureRandom.uuid
+      expect(HandledEvent.exists?("evt", Time.current, Time.current, instrumenter_id, {})).to eq(false)
+    end
+
+    # Subclass overriding .exists? to prevent duplicates based on instrumenter_id
+    with_model :DedupHandledEvent, superclass: Oscar::Audit::ApplicationLog do
+      table do |t|
+        t.string :event_uuid
+        t.timestamps
+      end
+
+      model do
+        def self.exists?(event_name, started_at, finished_at, instrumenter_id, payload)
+          where(event_uuid: payload[:event_id]).exists?
+        end
+
+        def handle(event_name, started_at, finished_at, instrumenter_id, payload)
+          self.actor = payload[:actor]
+          self.target = payload[:target]
+          self.target_event = event_name.split(".").last
+          self.event_uuid = payload[:event_id]
+          self
+        end
+      end
+    end
+
+    it "does not create duplicates when a child class overrides .exists?" do
+      instrumenter_id = SecureRandom.uuid
+      event_id = SecureRandom.uuid
+
+      expect {
+        2.times do
+          DedupHandledEvent.handle("audit.something", Time.current, Time.current, instrumenter_id, { actor: actor, target: target, event_id: event_id })
+        end
+      }.to change { DedupHandledEvent.count }.by(1)
+       .and change { Oscar::Audit::Log.count }.by(1)
+    end
+
+    it "creates separate records for different instrumenter IDs" do
+      instrumenter_id = SecureRandom.uuid
+      event_id1 = SecureRandom.uuid
+      event_id2 = SecureRandom.uuid
+
+      expect {
+        DedupHandledEvent.handle("audit.something", Time.current, Time.current, instrumenter_id, { actor: actor, target: target, event_id: event_id1  })
+        DedupHandledEvent.handle("audit.something", Time.current, Time.current, instrumenter_id, { actor: actor, target: target, event_id: event_id2  })
+      }.to change { DedupHandledEvent.count }.by(2)
+       .and change { Oscar::Audit::Log.count }.by(2)
     end
   end
 end
