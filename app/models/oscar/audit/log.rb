@@ -8,7 +8,7 @@ module Oscar
       belongs_to :target, polymorphic: true
       belongs_to :application_log, polymorphic: true
 
-      validates :actor, :target, :target_event, :target_event_id, :application_log, presence: true
+      validates :actor, :target, :target_event, :application_log, presence: true
     end
   end
 end
