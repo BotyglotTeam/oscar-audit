@@ -9,6 +9,11 @@ module Oscar
       belongs_to :application_log, polymorphic: true
 
       validates :actor, :target, :target_event, :application_log, presence: true
+
+      # Make records readonly after they have been persisted
+      def readonly?
+        persisted?
+      end
     end
   end
 end

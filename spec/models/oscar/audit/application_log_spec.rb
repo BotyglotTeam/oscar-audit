@@ -114,6 +114,22 @@ RSpec.describe Oscar::Audit::ApplicationLog, type: :model do
     end
   end
 
+  describe "readonly after persistence" do
+    it "raises ActiveRecord::ReadOnlyRecord on update after create" do
+      app_log = HandledEvent.create!(actor: actor, target: target, target_event: "done")
+      expect {
+        app_log.update!(note: "changed")
+      }.to raise_error(ActiveRecord::ReadOnlyRecord)
+    end
+
+    it "raises ActiveRecord::ReadOnlyRecord on destroy after create" do
+      app_log = HandledEvent.create!(actor: actor, target: target, target_event: "done")
+      expect {
+        app_log.destroy!
+      }.to raise_error(ActiveRecord::ReadOnlyRecord)
+    end
+  end
+
   describe ".perform_handle?" do
     it "returns true by default on the base class and simple subclasses" do
       instrumenter_id = SecureRandom.uuid

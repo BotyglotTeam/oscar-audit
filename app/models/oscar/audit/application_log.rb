@@ -79,6 +79,11 @@ module Oscar
         )
       end
 
+      # Make records readonly after they have been persisted
+      def readonly?
+        persisted?
+      end
+
     end
   end
 end
