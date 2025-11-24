@@ -8,43 +8,43 @@ module Oscar
     # This toggle is thread-local and can be overridden within a block using
     # with_application_logs / without_application_logs.
 
-    APPLICATION_LOGS_TOGGLE_KEY = :__oscar_activities_application_logs_enabled
+    APPLICATION_ACTIVITY_TOGGLE_KEY = :__oscar_activities_application_activities_enabled
     # EVENT_SUBSCRIBERS is a Hash of event_name => { handler_dedup_key => subscriber }
     EVENT_SUBSCRIBERS = Hash.new { |h, k| h[k] = {} }
 
     class << self
       # Global flag that applies across all threads. Thread-local overrides take precedence.
-      @global_application_logs_enabled = true
+      @global_application_activities_enabled = true
 
-      def application_logs_enabled?
-        thread_value = Thread.current[APPLICATION_LOGS_TOGGLE_KEY]
+      def application_activities_enabled?
+        thread_value = Thread.current[APPLICATION_ACTIVITY_TOGGLE_KEY]
         return !!thread_value unless thread_value.nil?
-        !!@global_application_logs_enabled
+        !!@global_application_activities_enabled
       end
 
-      def with_application_logs
-        previous_state = application_logs_enabled?
-        Thread.current[APPLICATION_LOGS_TOGGLE_KEY] = true
+      def with_application_activities
+        previous_state = application_activities_enabled?
+        Thread.current[APPLICATION_ACTIVITY_TOGGLE_KEY] = true
         yield
       ensure
-        Thread.current[APPLICATION_LOGS_TOGGLE_KEY] = previous_state
+        Thread.current[APPLICATION_ACTIVITY_TOGGLE_KEY] = previous_state
       end
 
-      def without_application_logs
-        previous_state = application_logs_enabled?
-        Thread.current[APPLICATION_LOGS_TOGGLE_KEY] = false
+      def without_application_activities
+        previous_state = application_activities_enabled?
+        Thread.current[APPLICATION_ACTIVITY_TOGGLE_KEY] = false
         yield
       ensure
-        Thread.current[APPLICATION_LOGS_TOGGLE_KEY] = previous_state
+        Thread.current[APPLICATION_ACTIVITY_TOGGLE_KEY] = previous_state
       end
 
       # Optional imperative API (global across all threads)
-      def enable_application_logs!
-        @global_application_logs_enabled = true
+      def enable_application_activities!
+        @global_application_activities_enabled = true
       end
 
-      def disable_application_logs!
-        @global_application_logs_enabled = false
+      def disable_application_activities!
+        @global_application_activities_enabled = false
       end
 
       # Global subscription registry helpers (used to avoid duplicate subscriptions in test/reload scenarios)

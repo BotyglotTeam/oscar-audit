@@ -10,7 +10,7 @@ module Oscar
         desc "Installs Oscar Activities Gem"
 
         def create_files
-          template "app/models/application_log.rb.erb", "app/models/application_log.rb"
+          template "app/models/application_activity.rb.erb", "app/models/application_activity.rb"
           template "spec/support/oscar_activities.rb.erb", "spec/support/oscar_activities.rb"
         end
 
