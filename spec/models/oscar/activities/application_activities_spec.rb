@@ -3,7 +3,7 @@
 require "rails_helper"
 require "securerandom"
 
-RSpec.describe Oscar::Activities::ApplicationLog, type: :model do
+RSpec.describe Oscar::Activities::ApplicationActivity, type: :model do
   # Ephemeral models to make tests readable
   with_model :TestActor do
     table do |t|
@@ -20,7 +20,7 @@ RSpec.describe Oscar::Activities::ApplicationLog, type: :model do
   end
 
   # Minimal child class of ApplicationLog used for tests
-  with_model :HandledEvent, superclass: Oscar::Activities::ApplicationLog do
+  with_model :HandledEvent, superclass: Oscar::Activities::ApplicationActivity do
     table do |t|
       t.string :note
       t.timestamps
@@ -45,22 +45,22 @@ RSpec.describe Oscar::Activities::ApplicationLog, type: :model do
   describe "associations" do
     subject(:app_log) { HandledEvent.new }
 
-    it { is_expected.to have_one(:log).class_name("Oscar::Activities::Log") }
+    it { is_expected.to have_one(:activity).class_name("Oscar::Activities::Activity") }
   end
 
   describe "after_create_commit" do
     it "creates a Log linked to actor, target and application_log" do
       expect {
         HandledEvent.create!(actor: actor, target: target, target_event: "done")
-      }.to change { Oscar::Activities::Log.count }.by(1)
+      }.to change { Oscar::Activities::Activity.count }.by(1)
 
       app_log = HandledEvent.last
-      log = app_log.log
+      log = app_log.activity
       expect(log).to be_present
       expect(log.actor).to eq(actor)
       expect(log.target).to eq(target)
       expect(log.target_event).to eq('done')
-      expect(log.application_log).to eq(app_log)
+      expect(log.application_activity).to eq(app_log)
     end
   end
 
@@ -78,11 +78,11 @@ RSpec.describe Oscar::Activities::ApplicationLog, type: :model do
       HandledEvent.tracks(event_name)
 
       expect {
-        Oscar::Activities.with_application_logs do
+        Oscar::Activities.with_application_activities do
           ActiveSupport::Notifications.instrument(event_name, actor: actor, target: target)
         end
       }.to change { HandledEvent.count }.by(1)
-       .and change { Oscar::Activities::Log.count }.by(1)
+       .and change { Oscar::Activities::Activity.count }.by(1)
     end
 
     it "does not process events when application logs are disabled" do
@@ -91,26 +91,26 @@ RSpec.describe Oscar::Activities::ApplicationLog, type: :model do
       HandledEvent.tracks(event_name)
 
       expect {
-        Oscar::Activities.without_application_logs do
+        Oscar::Activities.without_application_activities do
           ActiveSupport::Notifications.instrument(event_name, actor: actor, target: target)
         end
       }.to change(HandledEvent, :count).by(0)
-       .and change(Oscar::Activities::Log, :count).by(0)
+       .and change(Oscar::Activities::Activity, :count).by(0)
     end
   end
 
   describe ".handle" do
-    it "instantiates, calls instance#handle, saves the record and creates the associated log" do
+    it "instantiates, calls instance#handle, saves the record and creates the associated activity" do
       instrumenter_id = SecureRandom.uuid
       expect {
         HandledEvent.handle("evt", Time.current, Time.current, instrumenter_id, { actor: actor, target: target })
       }.to change { HandledEvent.count }.by(1)
-       .and change { Oscar::Activities::Log.count }.by(1)
+       .and change { Oscar::Activities::Activity.count }.by(1)
 
       record = HandledEvent.last
-      expect(record.log).to be_present
-      expect(record.log.actor).to eq(actor)
-      expect(record.log.target).to eq(target)
+      expect(record.activity).to be_present
+      expect(record.activity.actor).to eq(actor)
+      expect(record.activity.target).to eq(target)
     end
   end
 
@@ -137,7 +137,7 @@ RSpec.describe Oscar::Activities::ApplicationLog, type: :model do
     end
 
     # Subclass overriding .perform_handle? to prevent duplicates based on instrumenter_id
-    with_model :DedupHandledEvent, superclass: Oscar::Activities::ApplicationLog do
+    with_model :DedupHandledEvent, superclass: Oscar::Activities::ApplicationActivity do
       table do |t|
         t.string :event_uuid
         t.timestamps
@@ -167,7 +167,7 @@ RSpec.describe Oscar::Activities::ApplicationLog, type: :model do
           DedupHandledEvent.handle("activities.something", Time.current, Time.current, instrumenter_id, { actor: actor, target: target, event_id: event_id })
         end
       }.to change { DedupHandledEvent.count }.by(1)
-       .and change { Oscar::Activities::Log.count }.by(1)
+       .and change { Oscar::Activities::Activity.count }.by(1)
     end
 
     it "creates separate records for different instrumenter IDs" do
@@ -179,7 +179,7 @@ RSpec.describe Oscar::Activities::ApplicationLog, type: :model do
         DedupHandledEvent.handle("activities.something", Time.current, Time.current, instrumenter_id, { actor: actor, target: target, event_id: event_id1  })
         DedupHandledEvent.handle("activities.something", Time.current, Time.current, instrumenter_id, { actor: actor, target: target, event_id: event_id2  })
       }.to change { DedupHandledEvent.count }.by(2)
-       .and change { Oscar::Activities::Log.count }.by(2)
+       .and change { Oscar::Activities::Activity.count }.by(2)
     end
   end
 end
