@@ -1,0 +1,25 @@
+# This file was created by the oscar-activities gem, using
+# the command `rails g oscar:activities:install`
+#
+# You can update this file as needed, but the recommended practice
+# involves updating the file in the gem, updating the gem reference
+# in the project, and then running the command again.
+#
+# Please ensure that everything is up to your expectations before
+# committing the changes
+
+Oscar::Activities.disable_application_logs!
+
+RSpec.configure do |config|
+
+  config.before :each, type: :feature do
+    Oscar::Activities.enable_application_logs!
+  end
+
+  config.before :each, require_application_logs: true do |example|
+    unless example.metadata[:type] == :feature
+      # feature test already have the seed loaded (see above)
+      Oscar::Activities.enable_application_logs!
+    end
+  end
+end

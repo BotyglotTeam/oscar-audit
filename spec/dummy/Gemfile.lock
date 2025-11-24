@@ -1,7 +1,7 @@
 PATH
   remote: ../..
   specs:
-    oscar-audit (0.1.0)
+    oscar-activities (0.1.0)
       rails (>= 8.0.3)
 
 GEM
@@ -316,7 +316,7 @@ DEPENDENCIES
   brakeman
   debug
   jbuilder
-  oscar-audit!
+  oscar-activities!
   propshaft
   puma (>= 5.0)
   rails (~> 8.0.3)
