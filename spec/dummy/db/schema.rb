@@ -10,16 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_24_211045) do
-  create_table "oscar_activities_actors", force: :cascade do |t|
-    t.integer "type", default: 0, null: false
-    t.string "name", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["type"], name: "idx_oscar_activities_actors_on_type"
-  end
-
-  create_table "oscar_activities_logs", force: :cascade do |t|
+ActiveRecord::Schema[8.0].define(version: 2025_11_24_224900) do
+  create_table "oscar_activities_activities", force: :cascade do |t|
     t.string "actor_type", null: false
     t.integer "actor_id", null: false
     t.string "impersonated_by_type"
@@ -27,14 +19,22 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_24_211045) do
     t.string "target_type", null: false
     t.integer "target_id", null: false
     t.string "target_event", null: false
-    t.string "application_log_type", null: false
-    t.integer "application_log_id", null: false
+    t.string "application_activity_type", null: false
+    t.integer "application_activity_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["actor_type", "actor_id"], name: "idx_oaudit_acts_on_actor"
-    t.index ["application_log_type", "application_log_id"], name: "idx_oaudit_acts_on_log"
+    t.index ["application_activity_type", "application_activity_id"], name: "idx_oaudit_acts_on_log"
     t.index ["created_at"], name: "idx_oscars_activities_logs_on_created_at"
     t.index ["impersonated_by_type", "impersonated_by_id"], name: "idx_oaudit_acts_on_impersonated_by"
     t.index ["target_type", "target_id"], name: "idx_oaudit_acts_on_target"
+  end
+
+  create_table "oscar_activities_actors", force: :cascade do |t|
+    t.integer "type", default: 0, null: false
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["type"], name: "idx_oscar_activities_actors_on_type"
   end
 end
