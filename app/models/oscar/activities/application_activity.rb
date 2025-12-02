@@ -8,6 +8,11 @@ module Oscar
     class ApplicationActivity < ApplicationRecord
       self.abstract_class = true
 
+
+
+      class_attribute :component_class, instance_accessor: false, default: nil
+
+
       after_create_commit :create_associated_activity
 
       has_one :activity,
@@ -21,6 +26,10 @@ module Oscar
       attr_accessor :target_event
 
       class << self
+        # DSL to declare the component explicitly
+        def render_with(klass)
+          self.component_class = klass
+        end
         # Declare that this ApplicationActivity subclass tracks a specific ActiveSupport::Notifications event.
         # event_name must be a String. Regexp and other types are not allowed.
         def tracks(event_name)
