@@ -13,10 +13,10 @@
 
 Activities are rendered using ViewComponents resolved in this order:
 
-1. **Explicit** - `render_with YourComponent` in the ApplicationActivity subclass
-2. **Convention** - `DocumentCreated` → `DocumentCreatedComponent`
-3. **Fallback** - Development placeholder prompting you to add a component
-4. **Missing** - Handler for orphaned activities (missing `application_activity`)
+1. **Missing** - If `application_activity` is nil (orphaned/deleted), uses `Oscar::Activities::ApplicationActivityMissingComponent` (displays: "Activity #123 is missing its associated application activity data")
+2. **Explicit** - `render_with YourComponent` in the ApplicationActivity subclass
+3. **Convention** - `DocumentCreated` → `DocumentCreatedComponent`
+4. **Fallback** - If component not found, uses `Oscar::Activities::FallbackComponent` (displays: "Please add the component to render activities of type DocumentCreated")
 
 ### Creating Components
 
