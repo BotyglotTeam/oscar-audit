@@ -16,24 +16,37 @@ module Oscar
       end
 
       def component_class
+        # 0. Explicit handling of missing activities
+        return ApplicationActivityMissingComponent unless application_activity.present?
+
         # 1. Explicit mapping on the ApplicationActivity subclass (gem activities)
-        explicit = application_activity_class.component_class
+        explicit = application_activity.activity.component_class
         return explicit if explicit
 
         # 2. Infer mapping from ApplicationActivity subclass name
-        inferred = infer_host_component_class(application_activity_class)
+        inferred = infer_host_component_class(application_activity.activity)
         return inferred if inferred
 
         # 3. Fallback to gem-provided generic component
         fallback_component_class
       end
 
-      private
+      def component(actor:)
 
-      def application_activity_class
-        # application_activity is polymorphic, always present here
-        application_activity.class
+        if component_class == ApplicationActivityMissingComponent
+          ApplicationActivityMissingComponent.new(
+            activity: self,
+            actor: actor
+          )
+        else
+          component_class.new(
+            application_activity: application_activity,
+            actor: actor
+          )
+        end
       end
+
+      private
 
       def infer_host_component_class(klass)
         component_name = "#{klass.name}Component"
@@ -43,7 +56,7 @@ module Oscar
       end
 
       def fallback_component_class
-        ApplicationActivities::FallbackComponent
+        FallbackComponent
       end
     end
   end

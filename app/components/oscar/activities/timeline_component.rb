@@ -23,10 +23,12 @@ module Oscar
     #
     # For each activity, the timeline resolves the component to render:
     #
-    # 1. Check if the activity's ApplicationActivity subclass declares a component
+    # 1. If the activity is missing its application_activity association (orphaned),
+    #    render Oscar::Activities::ApplicationActivityMissingComponent
+    # 2. Check if the activity's ApplicationActivity subclass declares a component
     #    via +render_with+ (explicit)
-    # 2. Try to find a component using naming convention (implicit)
-    # 3. Fall back to Oscar::Activities::FallbackComponent
+    # 3. Try to find a component using naming convention (implicit)
+    # 4. Fall back to Oscar::Activities::FallbackComponent
     #
     # == Customization
     #
@@ -55,8 +57,8 @@ module Oscar
       attr_reader :activities, :current_actor
 
       # Renders a single activity using its resolved component.
-      def render_activity(activity:, actor:, **other_args )
-        render activity.application_activity.component(actor: actor, **other_args)
+      def render_activity(activity:, actor:)
+        render activity.component(actor: actor)
       end
 
       def activities?

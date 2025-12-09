@@ -186,8 +186,9 @@ module Oscar
       class << self
         # Declares the ViewComponent class to use for rendering this activity type.
         #
-        # @param klass [Class] A ViewComponent class that accepts an +application_activity:+ keyword argument
-        #
+        # @param klass [Class] A ViewComponent class that accepts
+        # * an +application_activity:+ keyword argument
+        # * an +actor:+ keyword argument
         # @example
         #   class CommentPostedActivity < Oscar::Activities::ApplicationActivity
         #     render_with CommentPostedComponent
@@ -258,12 +259,8 @@ module Oscar
         persisted?
       end
 
-      def component(actor:nil, **other_args)
-        self.class.component_class.new(
-          application_activity: self,
-          actor: actor,
-          **other_args
-        )
+      def component(actor: , **other_args)
+        activity.component(actor: actor, **other_args)
       end
 
     end
