@@ -33,17 +33,19 @@ module Oscar
     #   end
     #
     #   class UserLoginComponent < ViewComponent::Base
-    #     def initialize(application_activity:)
+    #     def initialize(application_activity:, actor:)
     #       @activity = application_activity
+    #       @actor = actor
     #     end
     #
     #     def call
-    #       content_tag :div, "User logged in at #{@activity.created_at}"
+    #       content_tag :div, "User #{actor.email} logged in at #{@activity.created_at}"
     #     end
     #   end
-    class FallbackComponent < ViewComponent::Base
-      def initialize(application_activity:)
-        @application_activity = application_activity
+        class FallbackComponent < ViewComponent::Base
+          def initialize(application_activity:, actor:, **_other_args)
+            @application_activity = application_activity
+            @actor = actor
       end
 
       def call

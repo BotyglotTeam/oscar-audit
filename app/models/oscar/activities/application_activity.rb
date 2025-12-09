@@ -28,11 +28,33 @@
 #
 #     tracks "user.login"
 #
+#     # Store activity-specific data
+#     attribute :user_id, :integer
+#     attribute :ip_address, :string
+#
 #     def handle(event_name, started_at, finished_at, event_id, payload)
 #       self.user_id = payload[:user_id]
 #       self.ip_address = payload[:ip_address]
 #       self.actor = payload[:actor]
 #       self.target = payload[:target]
+#     end
+#   end
+#
+#   # The corresponding component
+#   class UserLoginComponent < ViewComponent::Base
+#     def initialize(application_activity:, actor:, **other_args)
+#       @application_activity = application_activity
+#       @actor = actor
+#     end
+#
+#     def call
+#       content_tag :div, class: "activity-item" do
+#         if @actor == @application_activity.actor
+#           "You logged in from #{@application_activity.ip_address}"
+#         else
+#           "#{@application_activity.actor.name} logged in from #{@application_activity.ip_address}"
+#         end
+#       end
 #     end
 #   end
 #
@@ -64,19 +86,32 @@
 #
 # === Component Structure
 #
-# All components receive the activity instance via the +application_activity:+ keyword:
+# All components must accept two required keyword arguments:
+# - +application_activity:+ - The activity instance being rendered
+# - +actor:+ - The current user/actor viewing the timeline
+#
+# Components may also accept additional optional arguments via +**other_args+:
 #
 #   class UserLoginComponent < ViewComponent::Base
-#     def initialize(application_activity:)
+#     def initialize(application_activity:, actor:, **other_args)
 #       @application_activity = application_activity
+#       @actor = actor
 #     end
 #
 #     def call
 #       content_tag :div, class: "activity-item" do
-#         "User #{@application_activity.actor.name} logged in from #{@application_activity.ip_address}"
+#         if @actor == @application_activity.actor
+#           "You logged in from #{@application_activity.ip_address}"
+#         else
+#           "User #{@application_activity.actor.name} logged in from #{@application_activity.ip_address}"
+#         end
 #       end
 #     end
 #   end
+#
+# The +actor:+ parameter allows components to customize rendering based on who is
+# viewing the timeline (e.g., showing "You" vs. the user's name, hiding sensitive
+# information, or highlighting relevant activities).
 #
 # === Best Practices
 #
