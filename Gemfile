@@ -14,6 +14,7 @@ gem "rubocop-rails-omakase", require: false
 group :test do
   gem "shoulda-matchers"
   gem "with_model"
+  gem "capybara"
 end
 
 # Speed up boot for dummy app

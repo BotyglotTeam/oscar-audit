@@ -1,3 +1,5 @@
+require "view_component"
+
 module Oscar
   module Activities
     class Engine < ::Rails::Engine

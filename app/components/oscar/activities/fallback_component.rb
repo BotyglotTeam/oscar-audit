@@ -42,7 +42,7 @@ module Oscar
     #       content_tag :div, "User #{actor.email} logged in at #{@activity.created_at}"
     #     end
     #   end
-        class FallbackComponent < ViewComponent::Base
+        class FallbackComponent < ::ViewComponent::Base
           def initialize(application_activity:, actor:, **_other_args)
             @application_activity = application_activity
             @actor = actor

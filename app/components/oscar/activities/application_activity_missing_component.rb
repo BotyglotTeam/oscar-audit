@@ -32,7 +32,7 @@ module Oscar
     # - Consider cleaning up orphaned Activity records
     # - Check for database integrity issues
     # - Review your activity deletion/cleanup policies
-    class ApplicationActivityMissingComponent < ViewComponent::Base
+    class ApplicationActivityMissingComponent < ::ViewComponent::Base
       # @param activity [Oscar::Activities::Activity] The activity record missing its application_activity
       # @param actor [Object] The current user/actor viewing the timeline
       def initialize(activity:, actor:)
