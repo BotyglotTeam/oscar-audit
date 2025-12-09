@@ -65,7 +65,7 @@
 # activity class name.
 #
 #   # Activity class
-#   class DocumentCreatedActivity < Oscar::Activities::ApplicationActivity
+#   class DocumentCreated< Oscar::Activities::ApplicationActivity
 #     # No render_with declaration needed
 #     tracks "document.created"
 #   end
