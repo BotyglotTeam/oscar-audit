@@ -1,0 +1,22 @@
+<div class="oscar-activities-timeline">
+  <% if activities? %>
+    <div class="timeline-container">
+      <% activities.each do |activity| %>
+        <div class="timeline-activity-item" 
+             data-activity-id="<%= activity.id %>"
+             data-activity-type="<%= activity.application_activity&.class&.name %>">
+          <div class="activity-timestamp">
+            <%= activity.created_at.strftime("%B %-d, %Y at %I:%M %p") %>
+          </div>
+          <div class="activity-content">
+            <%= render_activity(activity: activity, actor: current_actor) %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="timeline-empty">
+      <p class="timeline-empty-message">No activities to display.</p>
+    </div>
+  <% end %>
+</div>

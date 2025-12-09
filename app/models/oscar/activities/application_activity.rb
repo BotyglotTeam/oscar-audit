@@ -223,6 +223,14 @@ module Oscar
         persisted?
       end
 
+      def component(actor:nil, **other_args)
+        self.class.component_class.new(
+          application_activity: self,
+          actor: actor,
+          **other_args
+        )
+      end
+
     end
   end
 end
