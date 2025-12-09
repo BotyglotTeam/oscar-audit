@@ -8,7 +8,7 @@ RSpec.describe Oscar::Activities::FallbackComponent, type: :component do
   end
 
   let(:application_activity) { TestActivity.new }
-  let(:actor) { double("Actor") }
+  let(:actor) { Oscar::Activities::Actor.system }
 
   subject(:component) do
     described_class.new(application_activity: application_activity, actor: actor)

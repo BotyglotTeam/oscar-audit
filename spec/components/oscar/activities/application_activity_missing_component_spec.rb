@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe Oscar::Activities::ApplicationActivityMissingComponent, type: :component do
   let(:activity) { Oscar::Activities::Activity.new(id: 123, created_at: 2.days.ago) }
-  let(:actor) { double("Actor") }
+  let(:actor) { Oscar::Activities::Actor.system }
 
   subject(:component) do
     described_class.new(activity: activity, actor: actor)
