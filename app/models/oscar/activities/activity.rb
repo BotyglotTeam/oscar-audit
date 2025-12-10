@@ -20,11 +20,11 @@ module Oscar
         return ApplicationActivityMissingComponent unless application_activity.present?
 
         # 1. Explicit mapping on the ApplicationActivity subclass (gem activities)
-        explicit = application_activity.activity.component_class
+        explicit = application_activity.class.component_class
         return explicit if explicit
 
         # 2. Infer mapping from ApplicationActivity subclass name
-        inferred = infer_host_component_class(application_activity.activity)
+        inferred = infer_host_component_class(application_activity)
         return inferred if inferred
 
         # 3. Fallback to gem-provided generic component
