@@ -214,6 +214,12 @@ module Oscar
           @__tracked_events ||= {}
           return if @__tracked_events.key?(event_name)
 
+          # Unsubscribe old subscriber if class was reloaded
+          if Oscar::Activities.handler_subscribed_for_event?(event_name, name)
+            old_subscriber = Oscar::Activities.unregister_event_handler_subscriber(event_name, name)
+            ActiveSupport::Notifications.unsubscribe(old_subscriber) if old_subscriber
+          end
+
           subscriber = ActiveSupport::Notifications.subscribe(event_name) do |ev_name, started_at, finished_at, event_id, payload|
             next unless Oscar::Activities.application_activities_enabled?
             self.handle(ev_name, started_at, finished_at, event_id, payload)

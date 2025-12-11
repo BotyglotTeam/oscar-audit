@@ -55,6 +55,12 @@ module Oscar
       def register_event_handler_subscriber(event_name, handler, subscriber)
         EVENT_SUBSCRIBERS[event_name][handler] = subscriber
       end
+
+      def unregister_event_handler_subscriber(event_name, handler)
+        EVENT_SUBSCRIBERS.dig(event_name, handler).tap do
+          EVENT_SUBSCRIBERS[event_name].delete(handler)
+        end
+      end
     end
   end
 end
