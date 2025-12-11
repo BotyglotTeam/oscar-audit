@@ -196,6 +196,13 @@ module Oscar
         def render_with(klass)
           self.component_class = klass
         end
+
+        # return a list of all tracked events
+        def tracked_events
+          @__tracked_events ||= {}
+          @__tracked_events.keys
+        end
+
         # Declare that this ApplicationActivity subclass tracks a specific ActiveSupport::Notifications event.
         # event_name must be a String. Regexp and other types are not allowed.
         def tracks(event_name)
