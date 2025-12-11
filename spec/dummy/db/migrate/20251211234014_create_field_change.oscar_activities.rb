@@ -1,3 +1,4 @@
+# This migration comes from oscar_activities (originally 20251211231630)
 class CreateFieldChange < ActiveRecord::Migration[8.0]
   def change
     create_table :activities_field_changes,  **table_id_opt  do |t|
