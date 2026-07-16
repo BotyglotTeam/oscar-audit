@@ -12,5 +12,5 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "posts#index"
 
-  mount Oscar::Audit::Engine => "/oscar/audit"
+  mount Oscar::Activities::Engine => "/oscar/activities"
 end
