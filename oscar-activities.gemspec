@@ -23,6 +23,7 @@ Gem::Specification.new do |spec|
   end
 
   spec.add_dependency "rails", ">= 8.0.3"
+  spec.add_dependency "view_component"
 
   spec.add_development_dependency "rspec-rails"
   spec.add_development_dependency "sqlite3"
